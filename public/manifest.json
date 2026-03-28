@@ -1,0 +1,17 @@
+{
+  "name": "Jun-Ari | Premium Wellness",
+  "short_name": "Jun-Ari",
+  "description": "Premium wellness products — natural health supplements and holistic solutions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
