@@ -15,7 +15,7 @@ interface Product {
   name: string
   description?: string | null
   image_url?: string | null
-  category_id?: string | null
+  category?: string | null
   product_variants?: Array<{
     id: string
     price: number
@@ -57,7 +57,8 @@ export function ShopClient({ products, categories }: ShopClientProps) {
 
     // Category filter
     if (selectedCategories.length > 0) {
-      result = result.filter((p) => p.category_id && selectedCategories.includes(p.category_id))
+      console.log('selectedCategories', selectedCategories)
+      result = result.filter((p) => p.category && selectedCategories.includes(p.category))
     }
 
     // Price filter
@@ -86,10 +87,9 @@ export function ShopClient({ products, categories }: ShopClientProps) {
   }, [products, searchQuery, selectedCategories, sortBy, priceRange])
 
   const toggleCategory = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
+    setSelectedCategories((prev) => prev.includes(categoryId)
+      ? prev.filter((id) => id !== categoryId)
+      : [...prev, categoryId]
     )
   }
 
@@ -101,7 +101,6 @@ export function ShopClient({ products, categories }: ShopClientProps) {
 
   const hasActiveFilters = searchQuery || selectedCategories.length > 0 || priceRange[0] > 0 || priceRange[1] < 10000
 
-  console.log('category', categories)
   const filterContent = (
     <div className="space-y-8">
       {/* Categories */}

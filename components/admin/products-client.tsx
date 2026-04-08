@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import type { ProductWithVariants } from "@/lib/types"
+import type { ProductWithVariants, ProductCategory } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions"
 import { toast } from "sonner"
 import { Plus, Pencil, Package } from "lucide-react"
@@ -28,7 +28,8 @@ function getStockStatus(product: ProductWithVariants) {
   return "in-stock"
 }
 
-export function AdminProductsClient({ products, categories }: { products: ProductWithVariants[]; categories: string[] }) {
+export function AdminProductsClient({ products, categories }: { products: ProductWithVariants[]; categories: ProductCategory[] }) {
+  console.log('categories',categories)
   const [filter, setFilter] = useState("all")
   const [editProductId, setEditProductId] = useState<string | null>(null)
 
@@ -74,10 +75,10 @@ export function AdminProductsClient({ products, categories }: { products: Produc
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="cat">Category</Label>
-                  <Select name="category" defaultValue={categories[0]}>
+                  <Select name="category" defaultValue={categories[0]?.id}>
                     <SelectTrigger id="cat"><SelectValue placeholder="Select..." /></SelectTrigger>
                     <SelectContent>
-                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      {categories.map(c => <SelectItem key={c?.id} value={c?.id}>{c?.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -95,7 +96,7 @@ export function AdminProductsClient({ products, categories }: { products: Produc
       <div className="mb-4 flex gap-2 flex-wrap">
         <Button variant={filter === "all" ? "default" : "outline"} size="sm" onClick={() => setFilter("all")}>All</Button>
         {categories.map(c => (
-          <Button key={c} variant={filter === c ? "default" : "outline"} size="sm" onClick={() => setFilter(c)}>{c}</Button>
+          <Button key={c?.id} variant={filter === c?.id ? "default" : "outline"} size="sm" onClick={() => setFilter(c?.id)}>{c?.name}</Button>
         ))}
       </div>
 
@@ -198,7 +199,7 @@ export function AdminProductsClient({ products, categories }: { products: Produc
                                 <Select name="category" defaultValue={product.category}>
                                   <SelectTrigger><SelectValue /></SelectTrigger>
                                   <SelectContent>
-                                    {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    {categories.map(c => <SelectItem key={c?.id} value={c?.id}>{c?.name}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                               </div>

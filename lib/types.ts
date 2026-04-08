@@ -141,3 +141,8 @@ export interface OrderWithItems extends Order {
   order_items: OrderItem[]
   profiles?: Profile
 }
+
+export interface ProductCategory {
+  id: string
+  name: string
+}

@@ -53,8 +53,15 @@ export async function getCategories() {
     .eq("is_active", true)
 
   if (!data) return []
-  const unique = [...new Set(data.map(d => d.category))]
-  return unique.sort()
+  const categories = data
+    .map(d => d.category)
+    .filter((c): c is string => !!c)
+  const unique = Array.from(new Set(categories)).map(category => ({
+    id: category,
+    name: category
+  }))
+  
+  return unique.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 // ======================== ORDERS ========================
