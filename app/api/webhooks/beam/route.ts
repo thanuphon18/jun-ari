@@ -10,12 +10,11 @@ export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text()
-  console.log('=========1')
-  console.log('=========1')
   const beamEvent = request.headers.get("x-beam-event")
   const beamSignature = request.headers.get("x-beam-signature")
 
   const webhookSecret = process.env.BEAM_WEBHOOK_SECRET?.trim()
+
   if (webhookSecret) {
     if (!verifyBeamWebhookSignature(rawBody, beamSignature, webhookSecret)) {
       return NextResponse.json({ ok: false, error: "Invalid signature" }, { status: 401 })

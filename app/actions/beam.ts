@@ -74,9 +74,13 @@ function buildBeamOrderPayload(
       quantity: item.quantity,
       sku: item.id.slice(0, 100),
     }
-    if (item.image_url) {
-      line.imageUrl = item.image_url
-    }
+  
+      if(item.image_url?.includes('https://')) {
+        line.imageUrl = item.image_url
+      } else if(item.image_url) {
+        line.imageUrl = `${process.env.NEXT_PUBLIC_APP_URL}${item.image_url}`
+      }
+    
     return line
   })
 

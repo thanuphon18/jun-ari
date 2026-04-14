@@ -215,8 +215,7 @@ export async function persistBeamPaidPaymentLink(
   const paymentLinkId = payload.paymentLinkId
   const order = payload.order
 
-
-  console.log('====payload', payload)
+  // console.log('====payload', payload)
   if (!paymentLinkId || !order) {
     return { ok: false, message: "missing paymentLinkId or order" }
   }
