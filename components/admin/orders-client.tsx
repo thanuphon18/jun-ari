@@ -59,9 +59,10 @@ export function AdminOrdersClient({ orders }: { orders: OrderWithItems[] }) {
       .select("*")
       .eq("is_active", true)
       .order("position")
-    
+  
     if (data) setCarriers(data)
   }
+
 
   const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter)
 

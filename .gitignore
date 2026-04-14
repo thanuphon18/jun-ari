@@ -43,3 +43,6 @@ Thumbs.db
 
 # Turbo (if used)
 .turbo
+
+
+.pnpm-store

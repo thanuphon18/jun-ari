@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { useCart, SHIPPING_OPTIONS } from "@/lib/cart-context"
+import { formatBahtInteger } from "@/lib/format-baht-display"
 
 export default function CartPage() {
   const { 
@@ -73,7 +74,7 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-foreground truncate">{item.name}</h3>
                   <p className="text-lg font-semibold text-foreground mt-1">
-                    ฿{item.price.toLocaleString()}
+                    ฿{formatBahtInteger(item.price)}
                   </p>
                 </div>
 
@@ -156,7 +157,7 @@ export default function CartPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
-                  <span className="font-medium">฿{subtotal.toLocaleString()}</span>
+                  <span className="font-medium">฿{formatBahtInteger(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
@@ -171,14 +172,14 @@ export default function CartPage() {
                 <Separator />
                 <div className="flex justify-between text-base font-bold">
                   <span>Total</span>
-                  <span>฿{total.toLocaleString()}</span>
+                  <span>฿{formatBahtInteger(total)}</span>
                 </div>
               </div>
 
               {amountToFreeShipping > 0 && (
                 <div className="bg-primary/5 rounded-lg p-3 text-center">
                   <p className="text-xs text-muted-foreground">
-                    Add <span className="font-semibold text-primary">฿{amountToFreeShipping.toLocaleString()}</span> more for free shipping
+                    Add <span className="font-semibold text-primary">฿{formatBahtInteger(amountToFreeShipping)}</span> more for free shipping
                   </p>
                 </div>
               )}

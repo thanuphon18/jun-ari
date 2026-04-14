@@ -1,16 +1,10 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { loadStripe } from "@stripe/stripe-js"
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js"
-import { createCheckoutSession, type CartItem } from "@/app/actions/stripe"
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-)
+import { useState } from "react"
+import { Loader2, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { createBeamPaymentLink, type CartItem } from "@/app/actions/beam"
+import { useAuth } from "@/lib/auth-context"
 
 interface CheckoutFormProps {
   cartItems: CartItem[]
@@ -18,19 +12,46 @@ interface CheckoutFormProps {
   shippingMethod?: string
 }
 
+const GUEST_USER_ID_STORAGE_KEY = "junari-guest-user-id"
+
+function getOrCreateGuestUserId() {
+  const existing = localStorage.getItem(GUEST_USER_ID_STORAGE_KEY)?.trim()
+  if (existing) return existing
+
+  const generated =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? `guest_${crypto.randomUUID()}`
+      : `guest_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+
+  localStorage.setItem(GUEST_USER_ID_STORAGE_KEY, generated)
+  return generated
+}
+
 export function CheckoutForm({ cartItems, customerEmail, shippingMethod }: CheckoutFormProps) {
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const { user } = useAuth()
 
-  const fetchClientSecret = useCallback(async () => {
-    const result = await createCheckoutSession(cartItems, customerEmail, shippingMethod)
-    
-    if (result.error || !result.clientSecret) {
-      setError(result.error || "Failed to initialize checkout")
-      throw new Error(result.error || "Failed to initialize checkout")
+  const handleCheckout = async () => {
+    setError(null)
+    setIsLoading(true)
+
+    const guestUserId = user?.id ? undefined : getOrCreateGuestUserId()
+    const result = await createBeamPaymentLink(
+      cartItems,
+      customerEmail,
+      shippingMethod,
+      guestUserId
+    )
+
+    if (!result.success || !result.url) {
+      setError(result.error || "Failed to create payment link")
+      setIsLoading(false)
+      return
     }
-    
-    return result.clientSecret
-  }, [cartItems, customerEmail, shippingMethod])
+
+    window.location.href = result.url
+  }
 
   if (error) {
     return (
@@ -47,13 +68,27 @@ export function CheckoutForm({ cartItems, customerEmail, shippingMethod }: Check
   }
 
   return (
-    <div id="checkout" className="min-h-[400px]">
-      <EmbeddedCheckoutProvider
-        stripe={stripePromise}
-        options={{ fetchClientSecret }}
+    <div id="checkout" className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        You will be redirected to Beam&apos;s secure hosted checkout page.
+      </p>
+      <Button
+        onClick={handleCheckout}
+        disabled={isLoading}
+        className="w-full sm:w-auto"
       >
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Redirecting...
+          </>
+        ) : (
+          <>
+            Pay with Beam
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCart } from "@/lib/cart-context"
+import { formatBahtInteger } from "@/lib/format-baht-display"
 import { CheckoutForm } from "@/components/checkout/checkout-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -24,7 +25,6 @@ export default function CheckoutPage() {
     )
   }
 
-  // Convert cart items to the format needed for Stripe
   const cartItems = items.map(item => ({
     id: item.id,
     name: item.name,
@@ -52,7 +52,7 @@ export default function CheckoutPage() {
             <CardHeader>
               <CardTitle className="text-lg">Payment Details</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Secure payment via Stripe. Supports credit cards and PromptPay.
+                Secure payment via Beam hosted checkout.
               </p>
             </CardHeader>
             <CardContent>
@@ -79,7 +79,7 @@ export default function CheckoutPage() {
                       <p className="font-medium truncate">{item.name}</p>
                       <p className="text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-medium ml-4">฿{(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="font-medium ml-4">฿{formatBahtInteger(item.price * item.quantity)}</p>
                   </div>
                 ))}
               </div>
@@ -90,7 +90,7 @@ export default function CheckoutPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
-                  <span className="font-medium">฿{subtotal.toLocaleString()}</span>
+                  <span className="font-medium">฿{formatBahtInteger(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
@@ -105,7 +105,7 @@ export default function CheckoutPage() {
                 <Separator />
                 <div className="flex justify-between text-base font-bold">
                   <span>Total</span>
-                  <span>฿{total.toLocaleString()}</span>
+                  <span>฿{formatBahtInteger(total)}</span>
                 </div>
               </div>
 

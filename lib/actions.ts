@@ -215,7 +215,7 @@ export async function toggleDiscountCode(id: string, isActive: boolean) {
 // ======================== CHECKOUT ========================
 
 export async function placeOrder(data: {
-  user_id: string
+  user_id?: string
   channel: "b2c" | "b2b"
   items: { variant_id: string; product_name: string; variant_name: string; sku: string; quantity: number; unit_price: number }[]
   shipping_address: Record<string, string>
@@ -264,7 +264,7 @@ export async function placeOrder(data: {
     .from("orders")
     .insert({
       order_number: orderNumber,
-      user_id: data.user_id,
+      user_id: data.user_id ?? null,
       channel: data.channel,
       status: "pending",
       payment_status: "unpaid",
@@ -272,6 +272,9 @@ export async function placeOrder(data: {
       discount_amount: discountAmount,
       tax_amount: taxAmount,
       shipping_amount: shippingAmount,
+      shipping_carrier: null,
+      tracking_number: null,
+      tracking_url: null,
       total,
       shipping_address: data.shipping_address,
       po_number: data.po_number || null,

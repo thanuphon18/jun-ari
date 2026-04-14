@@ -64,7 +64,8 @@ export interface InventoryRecord {
 export interface Order {
   id: string
   order_number: string
-  user_id: string
+  user_id?: string | null
+  guest_user_id?: string | null
   channel: "b2c" | "b2b"
   status: OrderStatus
   payment_status: "unpaid" | "paid" | "partial" | "refunded"
@@ -72,12 +73,21 @@ export interface Order {
   discount_amount: number
   tax_amount: number
   shipping_amount: number
+  shipping_carrier?: string | null
+  tracking_number?: string | null
+  tracking_url?: string | null
   total: number
   shipping_address: Record<string, string> | null
   billing_address: Record<string, string> | null
   po_number: string | null
   notes: string | null
   discount_code_id: string | null
+  /** e.g. beam */
+  payment_provider?: string | null
+  /** Gateway payment / link id */
+  external_payment_id?: string | null
+  currency?: string | null
+  customer_email?: string | null
   created_at: string
   updated_at: string
 }

@@ -6,6 +6,7 @@ import { ShoppingCart, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/cart-context"
+import { formatBahtInteger } from "@/lib/format-baht-display"
 import { toast } from "sonner"
 
 interface ProductCardProps {
@@ -98,11 +99,11 @@ export function ProductCard({ product, showQuickAdd = true }: ProductCardProps) 
         <div className="mt-auto pt-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-lg font-medium text-foreground">
-              ฿{price.toLocaleString()}
+              ฿{formatBahtInteger(price)}
             </span>
             {hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">
-                ฿{comparePrice.toLocaleString()}
+                ฿{formatBahtInteger(comparePrice)}
               </span>
             )}
           </div>

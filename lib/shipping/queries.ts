@@ -16,14 +16,14 @@ export interface ShippingCarrier {
 
 export interface Order {
   id: string
-  user_id: string | null
-  stripe_session_id: string | null
+  user_id?: string | null
+  guest_user_id?: string | null
+  payment_provider?: string | null
+  external_payment_id?: string | null
   status: string
-  total_amount: number
-  currency: string
-  customer_email: string | null
-  customer_name: string | null
-  customer_phone: string | null
+  total: number
+  currency?: string | null
+  customer_email?: string | null
   shipping_address: {
     address: string
     city: string
@@ -31,11 +31,11 @@ export interface Order {
     postal_code: string
     country: string
   } | null
-  shipping_method: string
-  shipping_cost: number
-  tracking_number: string | null
-  tracking_url: string | null
-  notes: string | null
+  shipping_amount: number
+  shipping_carrier?: string | null
+  tracking_number?: string | null
+  tracking_url?: string | null
+  notes?: string | null
   created_at: string
   updated_at: string
   items?: OrderItem[]

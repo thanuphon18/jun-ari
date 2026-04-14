@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
 import type { ProductWithVariants } from "@/lib/types"
+import { formatBahtInteger } from "@/lib/format-baht-display"
 
 export function ProductDetailClient({ product }: { product: ProductWithVariants }) {
   const { addItem } = useCart()
@@ -38,14 +39,17 @@ export function ProductDetailClient({ product }: { product: ProductWithVariants 
     : 0
 
   const handleAddToCart = () => {
-    addItem({
-      variant_id: variant.id,
-      product_id: product.id,
-      name: `${product.name} - ${variant.name}`,
-      price: Number(variant.price),
-      image_url: product.image_url ?? undefined,
-      quantity: qty,
-    })
+    addItem(
+      {
+        id: variant.id,
+        variantId: variant.id,
+        productId: product.id,
+        name: `${product.name} - ${variant.name}`,
+        price: Number(variant.price),
+        image_url: product.image_url ?? undefined,
+      },
+      qty
+    )
     toast.success(`Added ${qty}x ${product.name} (${variant.name}) to cart`)
   }
 
@@ -103,11 +107,11 @@ export function ProductDetailClient({ product }: { product: ProductWithVariants 
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-4xl font-bold text-foreground">
-                ฿{Number(variant.price).toLocaleString()}
+                ฿{formatBahtInteger(Number(variant.price))}
               </span>
               {hasDiscount && (
                 <span className="text-xl text-muted-foreground line-through">
-                  ฿{Number(variant.compare_at_price).toLocaleString()}
+                  ฿{formatBahtInteger(Number(variant.compare_at_price))}
                 </span>
               )}
             </div>
@@ -174,7 +178,7 @@ export function ProductDetailClient({ product }: { product: ProductWithVariants 
                 className="flex-1 h-12 text-base font-semibold"
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart - ฿{(Number(variant.price) * qty).toLocaleString()}
+                Add to Cart - ฿{formatBahtInteger(Number(variant.price) * qty)}
               </Button>
             </div>
 
