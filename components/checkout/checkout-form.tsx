@@ -5,6 +5,11 @@ import { Loader2, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { createBeamPaymentLink, type CartItem } from "@/app/actions/beam"
 import { useAuth } from "@/lib/auth-context"
+import {
+  deliveryAddressToRecord,
+  isDeliveryAddressComplete,
+  useCart,
+} from "@/lib/cart-context"
 
 interface CheckoutFormProps {
   cartItems: CartItem[]
@@ -31,8 +36,15 @@ export function CheckoutForm({ cartItems, customerEmail, shippingMethod }: Check
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuth()
+  const { deliveryAddress } = useCart()
+  const addressComplete = isDeliveryAddressComplete(deliveryAddress)
+  const shippingAddressRecord = deliveryAddressToRecord(deliveryAddress)
 
   const handleCheckout = async () => {
+    if (!isDeliveryAddressComplete(deliveryAddress)) {
+      setError("Please complete the delivery address above before continuing.")
+      return
+    }
     setError(null)
     setIsLoading(true)
 
@@ -41,7 +53,8 @@ export function CheckoutForm({ cartItems, customerEmail, shippingMethod }: Check
       cartItems,
       customerEmail,
       shippingMethod,
-      guestUserId
+      guestUserId,
+      shippingAddressRecord
     )
 
     if (!result.success || !result.url) {
@@ -72,9 +85,14 @@ export function CheckoutForm({ cartItems, customerEmail, shippingMethod }: Check
       <p className="text-sm text-muted-foreground">
         You will be redirected to Beam&apos;s secure hosted checkout page.
       </p>
+      {!addressComplete && (
+        <p className="text-sm text-muted-foreground">
+          Complete all delivery address fields above to enable payment.
+        </p>
+      )}
       <Button
         onClick={handleCheckout}
-        disabled={isLoading}
+        disabled={isLoading || !addressComplete}
         className="w-full sm:w-auto"
       >
         {isLoading ? (

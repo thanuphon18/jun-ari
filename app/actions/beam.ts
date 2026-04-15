@@ -53,6 +53,12 @@ const BEAM_LINK_SETTINGS = {
 
 const PAYMENT_LINK_TTL_MS = 24 * 60 * 60 * 1000
 
+function hasCompleteCheckoutShippingAddress(addr: Record<string, string>): boolean {
+  return ["full_name", "phone", "address", "district", "province", "postal_code"].every(
+    (k) => addr[k]?.trim().length
+  )
+}
+
 function buildBeamOrderPayload(
   cartItems: CartItem[],
   params: {
@@ -63,6 +69,7 @@ function buildBeamOrderPayload(
     shippingLabel: string
     finalShippingCost: number
     total: number
+    shippingAddress: Record<string, string> | null
   }
 ) {
   const orderItems = cartItems.map((item) => {
@@ -98,8 +105,10 @@ function buildBeamOrderPayload(
   const summary = cartItems.map((i) => `${i.name} x${i.quantity}`).join(", ")
   const internalBits = [params.customerEmail, params.shippingMethod].filter(Boolean)
 
+  const skipBeamAddress = hasCompleteCheckoutShippingAddress(params.shippingAddress ?? {})
+
   return {
-    collectDeliveryAddress: true,
+    collectDeliveryAddress: !skipBeamAddress,
     collectPhoneNumber: false,
     expiresAt: new Date(Date.now() + PAYMENT_LINK_TTL_MS).toISOString(),
     linkSettings: BEAM_LINK_SETTINGS,
@@ -120,7 +129,8 @@ export async function createBeamPaymentLink(
   cartItems: CartItem[],
   customerEmail?: string,
   shippingMethod = "thaipost",
-  guestUserId?: string
+  guestUserId?: string,
+  shippingAddress: Record<string, string> | null = null
 ): Promise<BeamPaymentLinkResult> {
   try {
     const beamBaseUrl = process.env.BEAM_BASE_URL
@@ -133,6 +143,9 @@ export async function createBeamPaymentLink(
     }
     if (!cartItems?.length) {
       return { success: false, url: null, error: "Cart is empty" }
+    }
+    if (!shippingAddress || !hasCompleteCheckoutShippingAddress(shippingAddress)) {
+      return { success: false, url: null, error: "Delivery address is incomplete" }
     }
 
     if (!beamMerchantId) {
@@ -155,6 +168,7 @@ export async function createBeamPaymentLink(
       shippingLabel: shipping.name,
       finalShippingCost,
       total,
+      shippingAddress,
     })
 
     const supabase = await createClient()
@@ -169,6 +183,7 @@ export async function createBeamPaymentLink(
       shippingMethod,
       shippingCost: finalShippingCost,
       totalAmount: total,
+      shippingAddress,
       cartItems: cartItems.map((item) => ({
         id: item.id,
         name: item.name,

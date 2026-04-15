@@ -86,6 +86,7 @@ export async function insertPendingBeamPaymentLinkOrder(
     shippingMethod: string
     shippingCost: number
     totalAmount: number
+    shippingAddress: Record<string, string> | null
     cartItems: PendingBeamOrderCartItem[]
   }
 ): Promise<{ ok: true; orderId: string } | { ok: false; message: string }> {
@@ -97,6 +98,7 @@ export async function insertPendingBeamPaymentLinkOrder(
     shippingMethod,
     shippingCost,
     totalAmount,
+    shippingAddress,
     cartItems,
   } = params
 
@@ -133,7 +135,7 @@ export async function insertPendingBeamPaymentLinkOrder(
       tracking_number: null,
       tracking_url: null,
       total,
-      shipping_address: null,
+      shipping_address: shippingAddress,
       po_number: null,
       discount_code_id: null,
       notes,

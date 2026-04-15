@@ -3,6 +3,7 @@
 import { useCart } from "@/lib/cart-context"
 import { formatBahtInteger } from "@/lib/format-baht-display"
 import { CheckoutForm } from "@/components/checkout/checkout-form"
+import { DeliveryAddressSection } from "@/components/checkout/delivery-address-section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ShoppingBag, ArrowLeft } from "lucide-react"
@@ -46,20 +47,18 @@ export default function CheckoutPage() {
       <h1 className="text-2xl md:text-3xl font-serif text-foreground mb-8">Checkout</h1>
 
       <div className="grid gap-8 lg:grid-cols-3">
-        {/* Payment Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-8">
+          <DeliveryAddressSection />
+
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Payment Details</CardTitle>
+              <CardTitle className="text-lg">Payment</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Secure payment via Beam hosted checkout.
               </p>
             </CardHeader>
             <CardContent>
-              <CheckoutForm 
-                cartItems={cartItems} 
-                shippingMethod={shippingMethod}
-              />
+              <CheckoutForm cartItems={cartItems} shippingMethod={shippingMethod} />
             </CardContent>
           </Card>
         </div>

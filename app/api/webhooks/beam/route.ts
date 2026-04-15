@@ -44,21 +44,7 @@ export async function POST(request: NextRequest) {
       }
       break
     }
-    case "charge.succeeded": {
-      const p = payload as {
-        chargeId?: string
-        referenceId?: string
-        sourceId?: string
-        source?: string
-      }
-      console.log("[beam-webhook] charge.succeeded", {
-        chargeId: p.chargeId,
-        referenceId: p.referenceId,
-        sourceId: p.sourceId,
-        source: p.source,
-      })
-      break
-    }
+
     default:
       if (beamEvent) {
         console.log("[beam-webhook] unhandled event:", beamEvent)

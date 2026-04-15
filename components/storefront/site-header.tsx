@@ -17,7 +17,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ navItems }: SiteHeaderProps) {
   const { profile, isAuthenticated, logout } = useAuth()
-  const { totalItems } = useCart()
+  const { itemCount } = useCart()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -86,9 +86,9 @@ export function SiteHeader({ navItems }: SiteHeaderProps) {
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart" className="relative">
                 <ShoppingCart className="h-5 w-5" />
-                {totalItems > 0 && (
+                {itemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0 text-[10px] bg-foreground text-background">
-                    {totalItems}
+                    {itemCount}
                   </Badge>
                 )}
               </Link>
