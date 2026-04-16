@@ -108,7 +108,8 @@ function buildBeamOrderPayload(
   const skipBeamAddress = hasCompleteCheckoutShippingAddress(params.shippingAddress ?? {})
 
   return {
-    collectDeliveryAddress: !skipBeamAddress,
+    // collectDeliveryAddress: !skipBeamAddress,
+    collectDeliveryAddress: true,
     collectPhoneNumber: false,
     expiresAt: new Date(Date.now() + PAYMENT_LINK_TTL_MS).toISOString(),
     linkSettings: BEAM_LINK_SETTINGS,
@@ -195,6 +196,21 @@ export async function createBeamPaymentLink(
       return { success: false, url: null, error: pendingOrder.message }
     }
 
+
+    // Log a curl command representation of the axios request for debugging purposes
+    if (process.env.NODE_ENV !== "production") {
+      const curlHeaders = [
+        '-H "Content-Type: application/json"',
+        `-H "Authorization: Basic ${basicCredentials}"`,
+        `-H "x-beam-idempotency-key: <generated-uuid>"`
+      ].join(" ");
+      // Note: randomUUID() will be generated at runtime, can't know value yet
+      const curlPayload = JSON.stringify(payload).replace(/"/g, '\\"');
+      const curlCmd = `curl -X POST "${beamBaseUrl}/api/v1/payment-links" ${curlHeaders} -d "${curlPayload}"`;
+      // eslint-disable-next-line no-console
+      console.log("[beam] axios request would be:", curlCmd);
+    }
+
     const { data } = await axios.post<{ url?: string; id?: string }>(
       `${beamBaseUrl}/api/v1/payment-links`,
       payload,
@@ -206,6 +222,8 @@ export async function createBeamPaymentLink(
         },
       }
     )
+
+    
 
     const paymentLinkId = data.id
     if (paymentLinkId) {
