@@ -118,7 +118,7 @@ export default function ContentPagesPage() {
               </div>
               <div className="space-y-2">
                 <Label>Content (Markdown supported)</Label>
-                <Textarea value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} rows={12} className="font-mono text-sm" />
+                <Textarea value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} rows={12} maxRows={12} className="font-mono text-sm" />
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={formData.is_published} onCheckedChange={(c) => setFormData({ ...formData, is_published: c })} />
