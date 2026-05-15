@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 
+import { parseFreeShippingThreshold } from "./free-shipping"
 import type {
   SiteSetting,
   HeroBanner,
@@ -42,6 +43,11 @@ export async function getSiteSetting(key: SiteSettingKey): Promise<string | null
 export async function getAnnouncementText(): Promise<string> {
   const text = await getSiteSetting("announcement_text")
   return text || ""
+}
+
+export async function getFreeShippingThreshold(): Promise<number | null> {
+  const raw = await getSiteSetting("free_shipping_threshold")
+  return parseFreeShippingThreshold(raw)
 }
 
 // ==============================================

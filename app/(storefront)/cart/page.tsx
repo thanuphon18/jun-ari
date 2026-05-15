@@ -22,11 +22,14 @@ export default function CartPage() {
     shippingCost, 
     total,
     shippingMethod,
-    setShippingMethod 
+    setShippingMethod,
+    freeShippingThreshold,
   } = useCart()
 
-  const freeShippingThreshold = 2000
-  const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal)
+  const qualifiesForFreeShipping =
+    freeShippingThreshold !== null && subtotal >= freeShippingThreshold
+  const amountToFreeShipping =
+    freeShippingThreshold === null ? null : Math.max(0, freeShippingThreshold - subtotal)
 
   if (items.length === 0) {
     return (
@@ -136,7 +139,7 @@ export default function CartPage() {
                       </Label>
                     </div>
                     <span className="text-sm font-medium">
-                      {subtotal >= freeShippingThreshold ? (
+                      {qualifiesForFreeShipping ? (
                         <span className="text-primary">Free</span>
                       ) : (
                         `฿${option.rate}`
@@ -176,7 +179,7 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {amountToFreeShipping > 0 && (
+              {amountToFreeShipping !== null && amountToFreeShipping > 0 && (
                 <div className="bg-primary/5 rounded-lg p-3 text-center">
                   <p className="text-xs text-muted-foreground">
                     Add <span className="font-semibold text-primary">฿{formatBahtInteger(amountToFreeShipping)}</span> more for free shipping

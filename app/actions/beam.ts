@@ -6,6 +6,7 @@ import {
   attachBeamPaymentLinkToOrder,
   insertPendingBeamPaymentLinkOrder,
 } from "@/lib/beam/payment-link-webhook"
+import { getFreeShippingThreshold } from "@/lib/cms/queries"
 import { createClient } from "@/lib/supabase/server"
 
 export interface CartItem {
@@ -155,8 +156,10 @@ export async function createBeamPaymentLink(
     const basicCredentials = Buffer.from(`${beamMerchantId}:${beamSecretKey}`).toString("base64")
 
     const shipping = SHIPPING_METHODS[shippingMethod] ?? SHIPPING_METHODS.thaipost
+    const freeShippingThreshold = await getFreeShippingThreshold()
     const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const finalShippingCost = subtotal >= 2000 ? 0 : shipping.cost
+    const finalShippingCost =
+      freeShippingThreshold !== null && subtotal >= freeShippingThreshold ? 0 : shipping.cost
     const total = subtotal + finalShippingCost
     const referenceId = `order_${Date.now()}`
     const redirectUrl = `${appUrl}/checkout/success?reference_id=${encodeURIComponent(referenceId)}`

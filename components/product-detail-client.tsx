@@ -13,7 +13,7 @@ import type { ProductWithVariants } from "@/lib/types"
 import { formatBahtInteger } from "@/lib/format-baht-display"
 
 export function ProductDetailClient({ product }: { product: ProductWithVariants }) {
-  const { addItem } = useCart()
+  const { addItem, freeShippingThreshold } = useCart()
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [qty, setQty] = useState(1)
 
@@ -184,15 +184,19 @@ export function ProductDetailClient({ product }: { product: ProductWithVariants 
 
             {/* Benefits */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <Truck className="h-5 w-5" />
+              {freeShippingThreshold !== null && (
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Free Shipping</p>
+                    <p className="text-xs text-muted-foreground">
+                      On orders over ฿{formatBahtInteger(freeShippingThreshold)}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Free Shipping</p>
-                  <p className="text-xs text-muted-foreground">On orders over ฿1,500</p>
-                </div>
-              </div>
+              )}
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                   <ShieldCheck className="h-5 w-5" />

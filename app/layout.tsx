@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter, Sarabun } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/lib/auth-context'
 import { CartProvider } from '@/lib/cart-context'
+import { getFreeShippingThreshold } from '@/lib/cms/queries'
 import { Toaster } from 'sonner'
 import { JsonLd } from '@/components/seo/json-ld'
 import { generateOrganizationSchema, generateWebsiteSchema, generateLocalBusinessSchema } from '@/lib/seo'
@@ -125,11 +126,13 @@ export const viewport: Viewport = {
   userScalable: true,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const freeShippingThreshold = await getFreeShippingThreshold()
+
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
@@ -144,7 +147,7 @@ export default function RootLayout({
       </head>
       <body className={`${cormorant.variable} ${inter.variable} ${sarabun.variable} font-serif antialiased`}>
         <AuthProvider>
-          <CartProvider>
+          <CartProvider freeShippingThreshold={freeShippingThreshold}>
             {children}
             <Toaster position="bottom-right" richColors />
           </CartProvider>

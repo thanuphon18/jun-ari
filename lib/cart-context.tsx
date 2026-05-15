@@ -61,6 +61,7 @@ interface CartContextType {
   subtotal: number
   shippingCost: number
   total: number
+  freeShippingThreshold: number | null
   shippingMethod: string
   setShippingMethod: (method: string) => void
   deliveryAddress: DeliveryAddress
@@ -72,7 +73,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 const CART_STORAGE_KEY = "junari-cart"
 const SHIPPING_STORAGE_KEY = "junari-shipping"
 const DELIVERY_ADDRESS_STORAGE_KEY = "junari-delivery-address"
-const FREE_SHIPPING_THRESHOLD = 2000
 
 export const SHIPPING_OPTIONS = [
   { id: "thaipost", name: "Thailand Post", rate: 50, days: "3-5 days" },
@@ -82,7 +82,13 @@ export const SHIPPING_OPTIONS = [
   { id: "dhl", name: "DHL Express", rate: 150, days: "Next day" },
 ]
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({
+  children,
+  freeShippingThreshold = null,
+}: {
+  children: ReactNode
+  freeShippingThreshold?: number | null
+}) {
   const [items, setItems] = useState<CartItem[]>([])
   const [shippingMethod, setShippingMethod] = useState("thaipost")
   const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>(EMPTY_DELIVERY_ADDRESS)
@@ -170,7 +176,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shippingOption = SHIPPING_OPTIONS.find(o => o.id === shippingMethod)
-  const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (shippingOption?.rate || 50)
+  const qualifiesForFreeShipping =
+    freeShippingThreshold !== null && subtotal >= freeShippingThreshold
+  const shippingCost = qualifiesForFreeShipping ? 0 : (shippingOption?.rate || 50)
   const total = subtotal + shippingCost
 
   return (
@@ -185,6 +193,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         subtotal,
         shippingCost,
         total,
+        freeShippingThreshold,
         shippingMethod,
         setShippingMethod,
         deliveryAddress,
